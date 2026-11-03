@@ -2,7 +2,7 @@
   "use strict";
   const DEFAULTS = { signalType: "car", intervalSeconds: 60, activeColor: "red" };
   const STORAGE_KEY = "ampel-uhr-settings-v1";
-  const PHASES = ["red", "yellow", "green"];
+  const PHASES = ["red", "yellow", "green", "yellow"];
   const COLORS = { red: "ROT", yellow: "GELB", green: "GRÜN" };
   const LABELS = { car: "Autoampel", pedestrian: "Fußgängerampel", bicycle: "Fahrradampel" };
   const $ = id => document.getElementById(id);
@@ -19,15 +19,17 @@
       return {
         signalType: LABELS[value.signalType] ? value.signalType : DEFAULTS.signalType,
         intervalSeconds: Number.isInteger(seconds) && seconds >= 1 && seconds <= 86400 ? seconds : 60,
-        activeColor: PHASES.includes(value.activeColor) ? value.activeColor : "red"
+        activeColor: PHASES.includes(value.activeColor) ? value.activeColor : "red",
+        phaseIndex: Number.isInteger(value.phaseIndex) && value.phaseIndex >= 0 && value.phaseIndex < PHASES.length ? value.phaseIndex : Math.max(0, PHASES.indexOf(value.activeColor))
       };
     } catch { return { ...DEFAULTS }; }
   }
   let settings = loadSettings();
-  let activeColor = settings.activeColor;
+  let phaseIndex = settings.phaseIndex;
+  let activeColor = PHASES[phaseIndex];
   let nextSwitchAt = Date.now() + settings.intervalSeconds * 1000;
   function save() {
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...settings, activeColor })); } catch {}
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...settings, activeColor, phaseIndex })); } catch {}
   }
   function formatDuration(seconds) {
     if (seconds < 60) return seconds + (seconds === 1 ? " Sekunde" : " Sekunden");
@@ -50,7 +52,8 @@
     document.title = COLORS[activeColor][0] + COLORS[activeColor].slice(1).toLowerCase() + " · Ampel-Uhr";
   }
   function nextPhase() {
-    activeColor = PHASES[(PHASES.indexOf(activeColor) + 1) % PHASES.length];
+    phaseIndex = (phaseIndex + 1) % PHASES.length;
+    activeColor = PHASES[phaseIndex];
   }
   function updateCountdown() {
     let remaining = nextSwitchAt - Date.now();
@@ -85,7 +88,7 @@
     save(); render(); updateCountdown(); dialog.close();
   });
   $("resetSettings").addEventListener("click", () => {
-    settings = { ...DEFAULTS }; activeColor = "red";
+    settings = { ...DEFAULTS }; phaseIndex = 0; activeColor = "red";
     typeInput.value = settings.signalType; intervalInput.value = "60";
     nextSwitchAt = Date.now() + 60000; error.textContent = "";
     save(); render(); updateCountdown();
