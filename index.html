@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10151b">
+  <title>Ampel-Uhr</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <span class="brand"><span class="brand-dot"></span>Ampel-Uhr</span>
+      <button id="settingsButton" class="icon-button" type="button" aria-label="Einstellungen öffnen" title="Einstellungen">⚙</button>
+    </header>
+
+    <section class="clock-panel" aria-label="Aktuelle Uhrzeit">
+      <p class="eyebrow">AKTUELLE UHRZEIT</p>
+      <div id="clock" class="clock">00:00:00</div>
+      <div id="date" class="date">Datum wird geladen …</div>
+    </section>
+
+    <section class="signal-section" aria-label="Ampelstatus">
+      <div class="section-heading">
+        <div><p class="eyebrow">SIGNALSTATUS</p><h1 id="signalTitle">Autoampel</h1></div>
+        <span id="statusPill" class="status-pill red">ROT AKTIV</span>
+      </div>
+      <div id="trafficLight" class="traffic-light" data-active="red" role="img" aria-label="Ampel: Rot">
+        <div class="lamp lamp-red" aria-label="Rot"></div>
+        <div class="lamp lamp-yellow" aria-label="Gelb"></div>
+        <div class="lamp lamp-green" aria-label="Grün"></div>
+      </div>
+      <div class="signal-info">
+        <div class="info-item"><span class="info-label">Umschalten in</span><strong id="countdown">60 s</strong></div>
+        <div class="info-divider"></div>
+        <div class="info-item"><span class="info-label">Intervall</span><strong id="intervalLabel">60 Sekunden</strong></div>
+      </div>
+      <button id="toggleButton" class="secondary-button" type="button">Phase manuell wechseln</button>
+    </section>
+    <footer>Eine Ampel-Uhr zur Simulation · Einstellungen werden in diesem Browser gespeichert.</footer>
+  </main>
+
+  <dialog id="settingsDialog" class="settings-dialog">
+    <form id="settingsForm">
+      <div class="dialog-heading">
+        <div><p class="eyebrow">ANPASSEN</p><h2>Einstellungen</h2></div>
+        <button id="closeSettings" class="icon-button close-button" type="button" aria-label="Schließen">×</button>
+      </div>
+      <label class="field-label" for="signalType">Ampeltyp</label>
+      <select id="signalType" name="signalType">
+        <option value="car">Autoampel</option>
+        <option value="pedestrian">Fußgängerampel</option>
+        <option value="bicycle">Fahrradampel</option>
+      </select>
+      <label class="field-label" for="intervalSeconds">Umschaltintervall</label>
+      <div class="input-with-unit"><input id="intervalSeconds" name="intervalSeconds" type="number" min="1" max="86400" step="1" value="60" required><span>Sekunden</span></div>
+      <p class="hint">Jede Farbe leuchtet für die eingestellte Dauer. Erlaubt: 1 bis 86.400 Sekunden.</p>
+      <div class="dialog-actions">
+        <button id="resetSettings" class="secondary-button" type="button">Standard</button>
+        <button class="primary-button" type="submit">Speichern</button>
+      </div>
+      <p id="settingsError" class="error-message" role="alert"></p>
+    </form>
+  </dialog>
+</body>
+</html>
